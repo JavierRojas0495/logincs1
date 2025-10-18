@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silogtran - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .pulse-dot {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* Removed hover-based expansion, added explicit collapsed/expanded states */
+        .sidebar {
+            width: 280px;
+            transition: width 0.3s ease;
+        }
+        
+        .sidebar.collapsed {
+            width: 80px;
+        }
+        
+        .sidebar-text {
+            display: inline-block;
+            opacity: 1;
+            transition: opacity 0.2s ease;
+            white-space: nowrap;
+            margin-left: 0.75rem;
+        }
+        
+        .sidebar.collapsed .sidebar-text {
+            opacity: 0;
+            width: 0;
+            margin-left: 0;
+            overflow: hidden;
+        }
+        
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+        
+        .sidebar.collapsed .silogtran-badge {
+            display: none;
+        }
+        
+        .sidebar.collapsed .user-info {
+            display: none;
+        }
+        
+        /* Tooltip for collapsed state */
+        .nav-item {
+            position: relative;
+        }
+        
+        .nav-item .tooltip {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 100;
+        }
+        
+        .sidebar.collapsed .nav-item:hover .tooltip {
+            opacity: 1;
+        }
+        
+        @media (max-width: 1023px) {
+            .sidebar {
+                width: 280px;
+            }
+            
+            .sidebar.collapsed {
+                width: 280px;
+            }
+            
+            .sidebar.collapsed .sidebar-text {
+                opacity: 1;
+                width: auto;
+                margin-left: 0.75rem;
+            }
+            
+            .sidebar.collapsed .logo-text,
+            .sidebar.collapsed .silogtran-badge,
+            .sidebar.collapsed .user-info {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50">
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700/50 transition-all duration-300 z-50 shadow-2xl -translate-x-full lg:translate-x-0">
+        <div class="flex flex-col h-full">
+            <!-- Logo Section -->
+            <div class="p-6 border-b border-slate-700/50 space-y-4">
+                <!-- Added flex container for logo and toggle button -->
+                <div class="flex items-center justify-between gap-2">
+                    <!-- Client Logo -->
+                    <div class="flex items-center gap-3 bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10 flex-1 min-w-0">
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 p-2.5 rounded-lg shadow-lg flex-shrink-0">
+                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+                            </svg>
+                        </div>
+                        <div class="overflow-hidden logo-text">
+                            <h2 class="text-base font-bold text-white whitespace-nowrap">Logo Empresa</h2>
+                            <p class="text-xs text-slate-400 whitespace-nowrap">Nombre de la Empresa</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Added toggle button for desktop -->
+                    <button 
+                        id="toggleBtn"
+                        onclick="toggleSidebarCollapse()"
+                        class="hidden lg:flex items-center justify-center w-10 h-10 bg-white/5 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
+                        title="Colapsar menú"
+                    >
+                        <svg id="toggleIcon" class="h-5 w-5 text-white transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Silogtran Badge -->
+                <div class="silogtran-badge flex items-center justify-center gap-2 py-2">
+                    <span class="text-xs text-slate-500">Powered by</span>
+                    <div class="bg-gradient-to-r from-pink-500 to-rose-500 px-3 py-1 rounded-md shadow-lg">
+                        <p class="text-xs font-bold text-white">Silogtran</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+                <!-- Added explicit text-white class to all sidebar-text spans -->
+                <button onclick="setActiveNav(this)" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30" title="Dashboard">
+                    <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    <span class="font-medium text-sm whitespace-nowrap sidebar-text text-white">Dashboard</span>
+                    <span class="tooltip">Dashboard</span>
+                </button>
+                
+                <button onclick="setActiveNav(this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white" title="Basicos">
+                    <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="font-medium text-sm whitespace-nowrap sidebar-text text-slate-300">Basicos</span>
+                    <span class="tooltip">Basicos</span>
+                </button>
+                
+                <button onclick="setActiveNav(this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white" title="Contable">
+                    <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span class="font-medium text-sm whitespace-nowrap sidebar-text text-slate-300">Contable</span>
+                    <span class="tooltip">Contable</span>
+                </button>
+                
+                <button onclick="setActiveNav(this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white" title="Despacho">
+                    <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+                    </svg>
+                    <span class="font-medium text-sm whitespace-nowrap sidebar-text text-slate-300">Despacho</span>
+                    <span class="tooltip">Despacho</span>
+                </button>
+                
+                <button onclick="setActiveNav(this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white" title="Financiero">
+                    <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="font-medium text-sm whitespace-nowrap sidebar-text text-slate-300">Financiero</span>
+                    <span class="tooltip">Financiero</span>
+                </button>
+                
+                <button onclick="setActiveNav(this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white" title="Internacional">
+                    <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="font-medium text-sm whitespace-nowrap sidebar-text text-slate-300">Internacional</span>
+                    <span class="tooltip">Internacional</span>
+                </button>
+                
+                <button onclick="setActiveNav(this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white" title="Inventario">
+                    <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                    <span class="font-medium text-sm whitespace-nowrap sidebar-text text-slate-300">Inventario</span>
+                    <span class="tooltip">Inventario</span>
+                </button>
+                
+                <button onclick="setActiveNav(this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white" title="Maestros">
+                    <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <span class="font-medium text-sm whitespace-nowrap sidebar-text text-slate-300">Maestros</span>
+                    <span class="tooltip">Maestros</span>
+                </button>
+                
+                <button onclick="setActiveNav(this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white" title="Mantenimiento">
+                    <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span class="font-medium text-sm whitespace-nowrap sidebar-text text-slate-300">Mantenimiento</span>
+                    <span class="tooltip">Mantenimiento</span>
+                </button>
+                
+                <button onclick="setActiveNav(this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white" title="Niif">
+                    <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="font-medium text-sm whitespace-nowrap sidebar-text text-slate-300">Niif</span>
+                    <span class="tooltip">Niif</span>
+                </button>
+                
+                <button onclick="setActiveNav(this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white" title="Requerimiento">
+                    <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                    </svg>
+                    <span class="font-medium text-sm whitespace-nowrap sidebar-text text-slate-300">Requerimiento</span>
+                    <span class="tooltip">Requerimiento</span>
+                </button>
+                
+                <button onclick="setActiveNav(this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white" title="Rodamiento">
+                    <svg class="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span class="font-medium text-sm whitespace-nowrap sidebar-text text-slate-300">Rodamiento</span>
+                    <span class="tooltip">Rodamiento</span>
+                </button>
+            </nav>
+
+            <!-- User Profile -->
+            <div class="p-4 border-t border-slate-700/50">
+                <div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                    <div class="flex items-center gap-3">
+                        <div id="userAvatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                            U
+                        </div>
+                        <div class="flex-1 min-w-0 user-info">
+                            <p id="userName" class="text-sm font-semibold text-white truncate">Usuario</p>
+                            <p id="userCenter" class="text-xs text-slate-400 truncate">Centro de Costo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <!-- Updated margin-left to match sidebar width dynamically -->
+    <div id="mainContent" class="transition-all duration-300" style="margin-left: 280px;">
+        <!-- Header -->
+        <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm">
+            <div class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <button onclick="toggleSidebar()" class="hover:bg-slate-100 p-2 rounded-lg transition-colors">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                            Dashboard
+                        </h1>
+                        <p id="welcomeMessage" class="text-xs sm:text-sm text-slate-600 hidden sm:block">Bienvenido de nuevo</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="hidden md:flex items-center gap-2 px-3 sm:px-4 py-2 bg-slate-100 rounded-lg">
+                        <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input
+                            type="text"
+                            placeholder="Buscar..."
+                            class="bg-transparent border-none outline-none text-sm text-slate-700 placeholder:text-slate-400 w-32 sm:w-48"
+                        />
+                    </div>
+
+                    <!-- Notifications -->
+                    <button class="relative hover:bg-slate-100 p-2 rounded-lg transition-colors">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full pulse-dot"></span>
+                    </button>
+
+                    <div class="hidden xl:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-pink-50 to-rose-50 rounded-lg border border-pink-200/50">
+                        <span class="text-xs text-slate-600">Powered by</span>
+                        <span class="text-xs font-bold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
+                            Silogtran
+                        </span>
+                    </div>
+
+                    <button
+                        onclick="logout()"
+                        class="gap-2 bg-white hover:bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg transition-colors flex items-center text-sm"
+                    >
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        <span class="hidden sm:inline">Cerrar Sesión</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="p-4 sm:p-6 space-y-4 sm:space-y-6">
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                <button class="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 bg-white rounded-xl sm:rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200 group">
+                    <div class="bg-blue-500 p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs sm:text-sm font-semibold text-slate-700">Nueva Orden</span>
+                </button>
+                
+                <button class="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 bg-white rounded-xl sm:rounded-2xl border border-slate-200 hover:border-orange-300 hover:shadow-lg transition-all duration-200 group">
+                    <div class="bg-orange-500 p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs sm:text-sm font-semibold text-slate-700">Despacho</span>
+                </button>
+                
+                <button class="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 bg-white rounded-xl sm:rounded-2xl border border-slate-200 hover:border-green-300 hover:shadow-lg transition-all duration-200 group">
+                    <div class="bg-green-500 p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs sm:text-sm font-semibold text-slate-700">Manifiesto</span>
+                </button>
+                
+                <button class="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 bg-white rounded-xl sm:rounded-2xl border border-slate-200 hover:border-purple-300 hover:shadow-lg transition-all duration-200 group">
+                    <div class="bg-purple-500 p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs sm:text-sm font-semibold text-slate-700">Reportes</span>
+                </button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 sm:p-6">
+                    <div class="flex items-start justify-between mb-3 sm:mb-4">
+                        <div class="bg-blue-500/10 p-2.5 sm:p-3 rounded-lg sm:rounded-xl">
+                            <svg class="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+                            </svg>
+                        </div>
+                        <span class="bg-blue-500/10 text-blue-500 border-0 font-semibold text-xs px-2 py-1 rounded-md">+12%</span>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium">Envíos Activos</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-slate-900">24</p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 sm:p-6">
+                    <div class="flex items-start justify-between mb-3 sm:mb-4">
+                        <div class="bg-orange-500/10 p-2.5 sm:p-3 rounded-lg sm:rounded-xl">
+                            <svg class="h-5 w-5 sm:h-6 sm:w-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            </svg>
+                        </div>
+                        <span class="bg-orange-500/10 text-orange-500 border-0 font-semibold text-xs px-2 py-1 rounded-md">-5%</span>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium">Entregas Pendientes</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-slate-900">8</p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 sm:p-6">
+                    <div class="flex items-start justify-between mb-3 sm:mb-4">
+                        <div class="bg-red-500/10 p-2.5 sm:p-3 rounded-lg sm:rounded-xl">
+                            <svg class="h-5 w-5 sm:h-6 sm:w-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                        </div>
+                        <span class="bg-red-500/10 text-red-500 border-0 font-semibold text-xs px-2 py-1 rounded-md">+2</span>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium">Alertas</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-slate-900">3</p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 sm:p-6">
+                    <div class="flex items-start justify-between mb-3 sm:mb-4">
+                        <div class="bg-green-500/10 p-2.5 sm:p-3 rounded-lg sm:rounded-xl">
+                            <svg class="h-5 w-5 sm:h-6 sm:w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                            </svg>
+                        </div>
+                        <span class="bg-green-500/10 text-green-500 border-0 font-semibold text-xs px-2 py-1 rounded-md">+3%</span>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium">Eficiencia</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-slate-900">94%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Shipments -->
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm">
+                <div class="border-b border-slate-100 p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h3 class="text-slate-900 text-base sm:text-lg font-bold">Últimos Movimientos</h3>
+                            <p class="text-xs sm:text-sm text-slate-600">Seguimiento en tiempo real de tus envíos más recientes</p>
+                        </div>
+                        <button class="gap-2 bg-transparent border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors flex items-center text-sm w-full sm:w-auto justify-center">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            Hoy
+                        </button>
+                    </div>
+                </div>
+                <div class="p-4 sm:p-6">
+                    <div class="space-y-3 sm:space-y-4">
+                        <!-- Shipment 1 -->
+                        <div class="p-4 sm:p-5 border border-slate-200 rounded-xl hover:border-blue-300 hover:shadow-md transition-all duration-200 bg-white">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                                <div class="flex items-center gap-3 sm:gap-4">
+                                    <div class="w-3 h-3 rounded-full bg-blue-500 shadow-lg flex-shrink-0"></div>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-900 text-sm sm:text-base">ENV-2025-001</p>
+                                        <div class="flex items-center gap-2 text-xs sm:text-sm text-slate-600 mt-1">
+                                            <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <span class="truncate">Ciudad de México → Guadalajara</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+                                    <div class="text-left sm:text-right">
+                                        <p class="text-xs sm:text-sm font-semibold text-slate-900">En tránsito</p>
+                                        <div class="flex items-center gap-1 text-xs text-slate-600 mt-1">
+                                            <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span>2 horas</span>
+                                        </div>
+                                    </div>
+                                    <svg class="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div class="h-full bg-blue-500 transition-all duration-500 rounded-full" style="width: 65%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Shipment 2 -->
+                        <div class="p-4 sm:p-5 border border-slate-200 rounded-xl hover:border-green-300 hover:shadow-md transition-all duration-200 bg-white">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                                <div class="flex items-center gap-3 sm:gap-4">
+                                    <div class="w-3 h-3 rounded-full bg-green-500 shadow-lg flex-shrink-0"></div>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-900 text-sm sm:text-base">ENV-2025-002</p>
+                                        <div class="flex items-center gap-2 text-xs sm:text-sm text-slate-600 mt-1">
+                                            <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <span class="truncate">Monterrey → Tijuana</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+                                    <div class="text-left sm:text-right">
+                                        <p class="text-xs sm:text-sm font-semibold text-slate-900">Entregado</p>
+                                        <div class="flex items-center gap-1 text-xs text-slate-600 mt-1">
+                                            <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span>Completado</span>
+                                        </div>
+                                    </div>
+                                    <svg class="h-5 w-5 sm:h-6 sm:w-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div class="h-full bg-green-500 transition-all duration-500 rounded-full" style="width: 100%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Shipment 3 -->
+                        <div class="p-4 sm:p-5 border border-slate-200 rounded-xl hover:border-red-300 hover:shadow-md transition-all duration-200 bg-white">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                                <div class="flex items-center gap-3 sm:gap-4">
+                                    <div class="w-3 h-3 rounded-full bg-red-500 shadow-lg flex-shrink-0"></div>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-900 text-sm sm:text-base">ENV-2025-003</p>
+                                        <div class="flex items-center gap-2 text-xs sm:text-sm text-slate-600 mt-1">
+                                            <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <span class="truncate">Puebla → Cancún</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+                                    <div class="text-left sm:text-right">
+                                        <p class="text-xs sm:text-sm font-semibold text-slate-900">Retrasado</p>
+                                        <div class="flex items-center gap-1 text-xs text-slate-600 mt-1">
+                                            <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span>5 horas</span>
+                                        </div>
+                                    </div>
+                                    <svg class="h-5 w-5 sm:h-6 sm:w-6 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div class="h-full bg-red-500 transition-all duration-500 rounded-full" style="width: 45%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Shipment 4 -->
+                        <div class="p-4 sm:p-5 border border-slate-200 rounded-xl hover:border-blue-300 hover:shadow-md transition-all duration-200 bg-white">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                                <div class="flex items-center gap-3 sm:gap-4">
+                                    <div class="w-3 h-3 rounded-full bg-blue-500 shadow-lg flex-shrink-0"></div>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-900 text-sm sm:text-base">ENV-2025-004</p>
+                                        <div class="flex items-center gap-2 text-xs sm:text-sm text-slate-600 mt-1">
+                                            <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <span class="truncate">Querétaro → Mérida</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+                                    <div class="text-left sm:text-right">
+                                        <p class="text-xs sm:text-sm font-semibold text-slate-900">En tránsito</p>
+                                        <div class="flex items-center gap-1 text-xs text-slate-600 mt-1">
+                                            <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span>3 horas</span>
+                                        </div>
+                                    </div>
+                                    <svg class="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div class="h-full bg-blue-500 transition-all duration-500 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                <!-- Deliveries Today -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <div class="border-b border-slate-100 p-4 sm:p-6">
+                        <h3 class="text-slate-900 flex items-center gap-2 text-base sm:text-lg font-bold">
+                            <svg class="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            </svg>
+                            Entregas de Hoy
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600">Resumen de entregas programadas</p>
+                    </div>
+                    <div class="p-4 sm:p-6">
+                        <div class="space-y-3 sm:space-y-4">
+                            <div class="flex items-center justify-between p-3 sm:p-4 bg-green-50 rounded-xl border border-green-200">
+                                <span class="text-xs sm:text-sm font-medium text-slate-700">Completadas</span>
+                                <span class="text-xl sm:text-2xl font-bold text-green-600">12</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 sm:p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                <span class="text-xs sm:text-sm font-medium text-slate-700">Pendientes</span>
+                                <span class="text-xl sm:text-2xl font-bold text-blue-600">8</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 sm:p-4 bg-red-50 rounded-xl border border-red-200">
+                                <span class="text-xs sm:text-sm font-medium text-slate-700">Retrasadas</span>
+                                <span class="text-xl sm:text-2xl font-bold text-red-600">3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Alerts -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm lg:col-span-2">
+                    <div class="border-b border-slate-100 p-4 sm:p-6">
+                        <h3 class="text-slate-900 flex items-center gap-2 text-base sm:text-lg font-bold">
+                            <svg class="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            Alertas del Sistema
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600">Notificaciones importantes</p>
+                    </div>
+                    <div class="p-4 sm:p-6">
+                        <div class="space-y-3">
+                            <div class="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-red-50 rounded-xl border border-red-200">
+                                <div class="bg-red-500 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
+                                    <svg class="h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 space-y-1 min-w-0">
+                                    <p class="text-xs sm:text-sm font-semibold text-slate-900">Retraso en ruta ENV-2025-003</p>
+                                    <p class="text-xs text-slate-600">Condiciones climáticas adversas detectadas</p>
+                                </div>
+                                <span class="text-xs text-slate-500 whitespace-nowrap">15 min</span>
+                            </div>
+                            <div class="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                <div class="bg-blue-500 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
+                                    <svg class="h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 space-y-1 min-w-0">
+                                    <p class="text-xs sm:text-sm font-semibold text-slate-900">Nuevo pedido recibido</p>
+                                    <p class="text-xs text-slate-600">Cliente: Distribuidora del Norte - 5 paquetes</p>
+                                </div>
+                                <span class="text-xs text-slate-500 whitespace-nowrap">1 hora</span>
+                            </div>
+                            <div class="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-green-50 rounded-xl border border-green-200">
+                                <div class="bg-green-500 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
+                                    <svg class="h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 space-y-1 min-w-0">
+                                    <p class="text-xs sm:text-sm font-semibold text-slate-900">Entrega completada exitosamente</p>
+                                    <p class="text-xs text-slate-600">ENV-2025-002 - Cliente satisfecho</p>
+                                </div>
+                                <span class="text-xs text-slate-500 whitespace-nowrap">2 horas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check authentication
+        const username = sessionStorage.getItem('username');
+        const costCenter = sessionStorage.getItem('costCenter');
+        
+        if (!username || !costCenter) {
+            window.location.href = 'login.html';
+        } else {
+            // Update user info
+            document.getElementById('userName').textContent = username;
+            document.getElementById('userCenter').textContent = costCenter;
+            document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+            document.getElementById('welcomeMessage').textContent = `Bienvenido de nuevo, ${username}`;
+        }
+
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const toggleIcon = document.getElementById('toggleIcon');
+        let isCollapsed = false;
+
+        function toggleSidebarCollapse() {
+            isCollapsed = !isCollapsed;
+            
+            if (isCollapsed) {
+                sidebar.classList.add('collapsed');
+                mainContent.style.marginLeft = '80px';
+                toggleIcon.style.transform = 'rotate(180deg)';
+            } else {
+                sidebar.classList.remove('collapsed');
+                mainContent.style.marginLeft = '280px';
+                toggleIcon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        }
+
+        // Close sidebar when clicking overlay
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        // Navigation active state
+        function setActiveNav(button) {
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active', 'bg-gradient-to-r', 'from-blue-500', 'to-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-500/30');
+                item.classList.add('text-slate-300', 'hover:bg-white/5', 'hover:text-white');
+                const textSpan = item.querySelector('.sidebar-text');
+                if (textSpan) {
+                    textSpan.classList.remove('text-white');
+                    textSpan.classList.add('text-slate-300');
+                }
+            });
+            
+            // Add active class to clicked item
+            button.classList.add('active', 'bg-gradient-to-r', 'from-blue-500', 'to-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-500/30');
+            button.classList.remove('text-slate-300', 'hover:bg-white/5', 'hover:text-white');
+            const textSpan = button.querySelector('.sidebar-text');
+            if (textSpan) {
+                textSpan.classList.remove('text-slate-300');
+                textSpan.classList.add('text-white');
+            }
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+        
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 1024) {
+                mainContent.style.marginLeft = isCollapsed ? '80px' : '280px';
+            } else {
+                mainContent.style.marginLeft = '0';
+            }
+        });
+    </script>
+</body>
+</html>

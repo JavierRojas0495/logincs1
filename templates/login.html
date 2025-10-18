@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silogtran - Iniciar Sesión</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    * {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
+    }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .input-focus:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.6s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+  <div class="min-h-screen flex flex-col lg:flex-row">
+    <!-- Left Side - Login Form -->
+    <div class="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 animate-fade-in">
+      <div class="w-full max-w-md space-y-8">
+        <!-- Company Logo -->
+        <div class="text-center">
+          <div class="inline-block bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6">
+            <div class="w-32 h-16 sm:w-40 sm:h-20 mx-auto bg-gradient-to-r from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
+              <span class="text-white font-bold text-lg sm:text-xl">LOGO</span>
+            </div>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Bienvenido a Silogtran</h1>
+          <p class="text-sm sm:text-base text-gray-600">Ingresa tus credenciales para continuar</p>
+        </div>
+
+        <!-- Login Form -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 space-y-6">
+          <form id="loginForm" action="/login.php" method="POST" class="space-y-5">
+            <!-- Username Field -->
+            <div>
+              <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-user mr-2 text-blue-600"></i>Usuario
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                required
+                class="input-focus w-full px-4 py-3 border border-gray-300 rounded-lg transition-all duration-200"
+                placeholder="Ingresa tu usuario"
+              />
+              <span id="usernameError" class="text-red-500 text-sm hidden mt-1 block">
+                <i class="fas fa-exclamation-circle mr-1"></i>El usuario es requerido
+              </span>
+            </div>
+
+            <!-- Password Field -->
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-lock mr-2 text-blue-600"></i>Contraseña
+              </label>
+              <div class="relative">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  required
+                  class="input-focus w-full px-4 py-3 border border-gray-300 rounded-lg pr-12 transition-all duration-200"
+                  placeholder="Ingresa tu contraseña"
+                />
+                <button
+                  type="button"
+                  id="togglePassword"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <i class="fas fa-eye" id="eyeIcon"></i>
+                </button>
+              </div>
+              <span id="passwordError" class="text-red-500 text-sm hidden mt-1 block">
+                <i class="fas fa-exclamation-circle mr-1"></i>La contraseña es requerida
+              </span>
+            </div>
+
+            <!-- Remember Me & Forgot Password -->
+            <div class="flex items-center justify-between text-sm">
+              <label class="flex items-center cursor-pointer group">
+                <input type="checkbox" name="remember" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <span class="ml-2 text-gray-600 group-hover:text-gray-900 transition-colors">Recordarme</span>
+              </label>
+              <a href="/forgot-password.php" class="text-blue-600 hover:text-blue-700 font-medium transition-colors">
+                ¿Olvidaste tu contraseña?
+              </a>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              id="submitBtn"
+              class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              <span id="btnText">
+                <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión
+              </span>
+              <span id="btnLoading" class="hidden">
+                <i class="fas fa-spinner fa-spin mr-2"></i>Ingresando...
+              </span>
+            </button>
+          </form>
+
+          <!-- Powered by Silogtran -->
+          <div class="pt-4 border-t border-gray-200 text-center">
+            <p class="text-xs text-gray-500 mb-2">Powered by</p>
+            <div class="flex items-center justify-center gap-2">
+              <div class="w-6 h-6 bg-gradient-to-br from-pink-500 to-rose-600 rounded"></div>
+              <span class="font-bold text-gray-900">Silogtran</span>
+              <span class="text-gray-500 text-sm">by Colombia Software</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side - Branding (Hidden on mobile) -->
+    <div class="hidden lg:flex flex-1 gradient-bg p-12 items-center justify-center relative overflow-hidden">
+      <!-- Decorative Elements -->
+      <div class="absolute top-20 right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 left-20 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl"></div>
+      
+      <div class="relative z-10 text-white max-w-lg space-y-8 animate-fade-in">
+        <!-- Silogtran Logo -->
+        <div class="text-center mb-12">
+          <div class="inline-flex items-center gap-3 mb-4">
+            <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl shadow-2xl"></div>
+            <div class="text-left">
+              <h2 class="text-4xl font-bold">Silogtran</h2>
+              <p class="text-cyan-200 text-sm">by Colombia Software</p>
+            </div>
+          </div>
+          <p class="text-lg text-cyan-100 leading-relaxed">
+            Integre la información básica con la operación de transporte, el manejo de terceros, 
+            el proceso de predespacho, la facturación y la operación nacional en un solo sistema de gestión.
+          </p>
+        </div>
+
+        <!-- Features -->
+        <div class="space-y-4">
+          <div class="glass-effect rounded-xl p-6 feature-card">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-truck text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg mb-1">Gestión de Flota</h3>
+                <p class="text-cyan-100 text-sm">Control completo de vehículos y rutas en tiempo real</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-effect rounded-xl p-6 feature-card">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-box text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg mb-1">Control de Envíos</h3>
+                <p class="text-cyan-100 text-sm">Seguimiento detallado de cada paquete y documento</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-effect rounded-xl p-6 feature-card">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-chart-line text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg mb-1">Análisis en Tiempo Real</h3>
+                <p class="text-cyan-100 text-sm">Reportes y métricas para optimizar operaciones</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Certifications -->
+        <div class="flex items-center justify-center gap-4 pt-8">
+          <div class="glass-effect rounded-lg p-3">
+            <i class="fas fa-certificate text-2xl"></i>
+          </div>
+          <div class="glass-effect rounded-lg p-3">
+            <i class="fas fa-shield-alt text-2xl"></i>
+          </div>
+          <div class="glass-effect rounded-lg p-3">
+            <i class="fas fa-award text-2xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function() {
+      const passwordInput = document.getElementById('password');
+      const eyeIcon = document.getElementById('eyeIcon');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+      }
+    });
+
+    // Form validation
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const usernameError = document.getElementById('usernameError');
+      const passwordError = document.getElementById('passwordError');
+      
+      let isValid = true;
+      
+      // Reset errors
+      usernameError.classList.add('hidden');
+      passwordError.classList.add('hidden');
+      
+      // Validate username
+      if (!username) {
+        usernameError.classList.remove('hidden');
+        isValid = false;
+      }
+      
+      // Validate password
+      if (!password) {
+        passwordError.classList.remove('hidden');
+        isValid = false;
+      }
+      
+      // If valid, show loading and submit
+      if (isValid) {
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnLoading = document.getElementById('btnLoading');
+        
+        submitBtn.disabled = true;
+        btnText.classList.add('hidden');
+        btnLoading.classList.remove('hidden');
+        
+        // Submit the form (remove this line if you want to handle with AJAX)
+        this.submit();
+      }
+    });
+
+    // Real-time validation
+    document.getElementById('username').addEventListener('input', function() {
+      if (this.value.trim()) {
+        document.getElementById('usernameError').classList.add('hidden');
+      }
+    });
+
+    document.getElementById('password').addEventListener('input', function() {
+      if (this.value.trim()) {
+        document.getElementById('passwordError').classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
