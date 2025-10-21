@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import LoginForm from "@/components/login-form"
-import CostCenterSelection from "@/components/cost-center-selection"
-import Dashboard from "@/components/dashboard"
+import LoginForm from "@/components/login-form-bootstrap"
+import CostCenterSelection from "@/components/cost-center-selection-bootstrap"
+import Dashboard from "@/components/dashboard-bootstrap"
 
 export default function Home() {
   const [step, setStep] = useState<"login" | "cost-center" | "dashboard">("login")
@@ -27,7 +27,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="min-vh-100">
       {step === "login" && <LoginForm onSuccess={handleLoginSuccess} />}
       {step === "cost-center" && user && (
         <CostCenterSelection username={user.username} onSelect={handleCostCenterSelect} onLogout={handleLogout} />

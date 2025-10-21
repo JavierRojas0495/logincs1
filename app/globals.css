@@ -1,133 +1,232 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+/* Bootstrap CSS */
+@import 'bootstrap/dist/css/bootstrap.min.css';
 
-@custom-variant dark (&:is(.dark *));
-
-/* Updated theme for B2B logistics application with corporate colors */
+/* Custom CSS Variables for Silogtran Theme - Matching Design */
 :root {
-  --background: oklch(0.98 0.005 240);
-  --foreground: oklch(0.2 0.02 240);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.02 240);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.02 240);
-  --primary: oklch(0.35 0.08 250);
-  --primary-foreground: oklch(0.98 0.005 240);
-  --secondary: oklch(0.55 0.15 35);
-  --secondary-foreground: oklch(0.98 0.005 240);
-  --muted: oklch(0.94 0.005 240);
-  --muted-foreground: oklch(0.5 0.02 240);
-  --accent: oklch(0.65 0.18 35);
-  --accent-foreground: oklch(0.98 0.005 240);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.88 0.005 240);
-  --input: oklch(0.88 0.005 240);
-  --ring: oklch(0.35 0.08 250);
-  --chart-1: oklch(0.35 0.08 250);
-  --chart-2: oklch(0.65 0.18 35);
-  --chart-3: oklch(0.45 0.12 180);
-  --chart-4: oklch(0.55 0.15 120);
-  --chart-5: oklch(0.6 0.2 300);
-  --radius: 0.5rem;
-  --sidebar: oklch(0.25 0.03 245);
-  --sidebar-foreground: oklch(0.95 0.005 240);
-  --sidebar-primary: oklch(0.65 0.18 35);
-  --sidebar-primary-foreground: oklch(0.98 0.005 240);
-  --sidebar-accent: oklch(0.32 0.05 245);
-  --sidebar-accent-foreground: oklch(0.95 0.005 240);
-  --sidebar-border: oklch(0.3 0.03 245);
-  --sidebar-ring: oklch(0.65 0.18 35);
+  --primary-color: oklch(35% .08 250);        /* Azul oscuro principal - Color exacto del root */
+  --primary-hover: oklch(30% .08 250);        /* Azul oscuro hover - Versión más oscura */
+  --primary-light: oklch(50% .12 250);        /* Azul medio para enlaces - Versión más clara */
+  --secondary-color: #f59e0b;      /* Naranja/amarillo */
+  --success-color: #10b981;        /* Verde */
+  --danger-color: #ef4444;         /* Rojo */
+  --warning-color: #f59e0b;        /* Naranja */
+  --info-color: #3b82f6;           /* Azul info */
+  --light-color: #f8fafc;          /* Gris muy claro */
+  --dark-color: #1e293b;           /* Gris oscuro/negro */
+  --muted-color: #64748b;          /* Gris medio */
+  --muted-light: #94a3b8;          /* Gris claro para placeholders */
+  --border-color: #e2e8f0;         /* Borde gris claro */
+  --border-dark: #334155;          /* Borde gris oscuro */
+  --background-color: #ffffff;     /* Fondo blanco */
+  --background-light: #f8fafc;     /* Fondo gris muy claro */
+  --text-color: #1e293b;           /* Texto gris oscuro/negro */
+  --text-muted: #64748b;           /* Texto gris medio */
+  --sidebar-bg: #1e293b;           /* Fondo sidebar */
+  --sidebar-text: #f1f5f9;         /* Texto sidebar */
+  --card-bg: #ffffff;              /* Fondo tarjetas */
+  --promo-bg: oklch(35% .08 250);  /* Fondo sección promocional - Mismo color primary */
+  --promo-bg-light: oklch(40% .08 250);  /* Fondo promocional más claro */
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.dark {
-  --background: oklch(0.15 0.02 240);
-  --foreground: oklch(0.95 0.005 240);
-  --card: oklch(0.2 0.02 240);
-  --card-foreground: oklch(0.95 0.005 240);
-  --popover: oklch(0.2 0.02 240);
-  --popover-foreground: oklch(0.95 0.005 240);
-  --primary: oklch(0.45 0.12 250);
-  --primary-foreground: oklch(0.98 0.005 240);
-  --secondary: oklch(0.65 0.18 35);
-  --secondary-foreground: oklch(0.98 0.005 240);
-  --muted: oklch(0.25 0.02 240);
-  --muted-foreground: oklch(0.6 0.02 240);
-  --accent: oklch(0.65 0.18 35);
-  --accent-foreground: oklch(0.98 0.005 240);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.3 0.02 240);
-  --input: oklch(0.3 0.02 240);
-  --ring: oklch(0.45 0.12 250);
-  --chart-1: oklch(0.45 0.12 250);
-  --chart-2: oklch(0.65 0.18 35);
-  --chart-3: oklch(0.55 0.15 180);
-  --chart-4: oklch(0.6 0.18 120);
-  --chart-5: oklch(0.65 0.2 300);
-  --sidebar: oklch(0.18 0.02 245);
-  --sidebar-foreground: oklch(0.95 0.005 240);
-  --sidebar-primary: oklch(0.65 0.18 35);
-  --sidebar-primary-foreground: oklch(0.98 0.005 240);
-  --sidebar-accent: oklch(0.25 0.03 245);
-  --sidebar-accent-foreground: oklch(0.95 0.005 240);
-  --sidebar-border: oklch(0.22 0.02 245);
-  --sidebar-ring: oklch(0.65 0.18 35);
+/* Dark theme variables */
+[data-bs-theme="dark"] {
+  --background-color: #0f172a;
+  --text-color: #f1f5f9;
+  --card-bg: #1e293b;
+  --border-color: #334155;
+  --sidebar-bg: #0f172a;
+  --sidebar-text: #f1f5f9;
 }
 
-@theme inline {
-  --font-sans: "Geist", "Geist Fallback";
-  --font-mono: "Geist Mono", "Geist Mono Fallback";
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+/* Custom styles */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
+/* Grid pattern for login background */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, var(--border-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border-color) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.1;
+}
+
+/* Custom card styles */
+.custom-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.custom-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* Custom button styles */
+.btn-primary-custom {
+  background: var(--primary-color);
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.btn-primary-custom:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+  color: white;
+}
+
+/* Form input focus styles */
+.form-control:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 0.2rem oklch(35% .08 250 / 0.25) !important;
+}
+
+/* Placeholder text styling */
+.form-control::placeholder {
+  color: var(--muted-light) !important;
+  opacity: 1;
+}
+
+/* Link hover effects */
+.btn-link:hover {
+  color: var(--primary-hover) !important;
+}
+
+/* Professional login styles */
+.login-container {
+  background: linear-gradient(135deg, var(--background-light) 0%, var(--background-color) 100%);
+}
+
+/* Enhanced shadows for professional look */
+.professional-shadow {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.professional-shadow-lg {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Smooth transitions */
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Professional button styles */
+.btn-professional {
+  background: var(--primary-color);
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.875rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-professional:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.btn-professional:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Professional input styles */
+.input-professional {
+  border: 2px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 0.875rem 1rem 0.875rem 3rem;
+  font-size: 1rem;
+  background: var(--background-color);
+  color: var(--text-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-professional:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem oklch(35% .08 250 / 0.25);
+  background: var(--background-color);
+}
+
+.input-professional::placeholder {
+  color: var(--muted-light);
+  opacity: 1;
+}
+
+/* Sidebar styles */
+.sidebar-custom {
+  background: linear-gradient(180deg, var(--sidebar-bg), #334155, var(--sidebar-bg));
+  color: var(--sidebar-text);
+  border-right: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Animation classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.7s ease-out;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.7s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-30px); 
   }
-  body {
-    @apply bg-background text-foreground;
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
   }
+}
 
-  /* Adding grid pattern for login background */
-  .bg-grid-pattern {
-    background-image: linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px);
-    background-size: 40px 40px;
+@keyframes slideInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .custom-card {
+    border-radius: 0.75rem;
+  }
+  
+  .btn-primary-custom {
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
   }
 }
