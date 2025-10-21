@@ -320,12 +320,12 @@ export default function Dashboard({ username, costCenter, onLogout }: DashboardP
               
               {/* Company Logo and Info */}
               <div className="d-flex align-items-center gap-3">
-                <div className="d-flex align-items-center justify-content-center" style={{width: '3rem', height: '3rem'}}>
+                <div className="d-flex align-items-center justify-content-center" style={{width: '6rem', height: '6rem'}}>
                   <Image 
                     src="/img/corporativo/logo_repremundo.gif" 
                     alt="Repremundo Logo" 
-                    width={48} 
-                    height={48} 
+                    width={96} 
+                    height={96} 
                     className="img-fluid" 
                     style={{maxWidth: '100%', height: 'auto'}}
                   />
