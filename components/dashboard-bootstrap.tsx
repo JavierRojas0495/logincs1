@@ -146,6 +146,14 @@ const STATS = [
 export default function Dashboard({ username, costCenter, onLogout }: DashboardProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [expandedMenus, setExpandedMenus] = useState<{[key: string]: boolean}>({})
+  
+  // Notificaciones
+  const notifications = [
+    { id: 1, message: "Se actualizó la Remesa #R2025001", time: "Hace 5 min", type: "update" },
+    { id: 2, message: "Se creó el Manifiesto #M2025002", time: "Hace 15 min", type: "create" },
+    { id: 3, message: "Se confirmó el Manifiesto #M2025001", time: "Hace 1 hora", type: "confirm" },
+    { id: 4, message: "Se debe actualizar los documentos soportes #D2025003", time: "Hace 2 horas", type: "warning" }
+  ]
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
@@ -330,39 +338,130 @@ export default function Dashboard({ username, costCenter, onLogout }: DashboardP
             </div>
             
             <div className="d-flex align-items-center gap-3">
-              {/* User Profile */}
-              <div className="d-flex align-items-center gap-2">
-                <div className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" 
-                     style={{width: '2rem', height: '2rem', backgroundColor: 'var(--primary-color)'}}>
-                  {username.charAt(0).toUpperCase()}
-                </div>
-                <div className="d-none d-md-block">
-                  <p className="small fw-semibold mb-0" style={{color: 'var(--text-color)'}}>Administrador</p>
-                  <p className="small mb-0" style={{color: 'var(--text-muted)'}}>ADMINISTRADOR</p>
-                </div>
+              {/* Notifications Dropdown */}
+              <div className="dropdown">
+                <button 
+                  type="button" 
+                  className="btn btn-outline-secondary position-relative" 
+                  data-bs-toggle="dropdown" 
+                  aria-expanded="false"
+                >
+                  <Bell style={{width: '1.25rem', height: '1.25rem'}} />
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                        style={{width: '0.5rem', height: '0.5rem', fontSize: '0.7rem'}}>
+                    {notifications.length}
+                  </span>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end shadow" style={{minWidth: '320px', maxWidth: '400px'}}>
+                  <li>
+                    <h6 className="dropdown-header d-flex align-items-center justify-content-between">
+                      <span>Notificaciones</span>
+                      <span className="badge bg-primary rounded-pill">{notifications.length}</span>
+                    </h6>
+                  </li>
+                  <li><hr className="dropdown-divider" /></li>
+                  {notifications.map((notification) => (
+                    <li key={notification.id}>
+                      <div className="dropdown-item-text p-3">
+                        <div className="d-flex align-items-start gap-3">
+                          <div className="flex-shrink-0">
+                            <div className={`rounded-circle d-flex align-items-center justify-content-center`}
+                                 style={{
+                                   width: '2rem', 
+                                   height: '2rem',
+                                   backgroundColor: notification.type === 'warning' ? 'var(--warning-color)' : 
+                                                  notification.type === 'confirm' ? 'var(--success-color)' :
+                                                  notification.type === 'create' ? 'var(--info-color)' : 'var(--primary-color)'
+                                 }}>
+                              {notification.type === 'update' && <TrendingUp style={{width: '1rem', height: '1rem', color: 'white'}} />}
+                              {notification.type === 'create' && <FileText style={{width: '1rem', height: '1rem', color: 'white'}} />}
+                              {notification.type === 'confirm' && <CheckCircle2 style={{width: '1rem', height: '1rem', color: 'white'}} />}
+                              {notification.type === 'warning' && <AlertTriangle style={{width: '1rem', height: '1rem', color: 'white'}} />}
+                            </div>
+                          </div>
+                          <div className="flex-fill">
+                            <p className="small mb-1 fw-medium" style={{color: 'var(--text-color)'}}>
+                              {notification.message}
+                            </p>
+                            <p className="small mb-0" style={{color: 'var(--text-muted)'}}>
+                              {notification.time}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                  <li><hr className="dropdown-divider" /></li>
+                  <li>
+                    <button className="dropdown-item text-center fw-medium" type="button">
+                      Ver todas las notificaciones
+                    </button>
+                  </li>
+                </ul>
               </div>
 
-              {/* Notifications */}
-              <button type="button" className="btn btn-outline-secondary position-relative">
-                <Bell style={{width: '1.25rem', height: '1.25rem'}} />
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
-                      style={{width: '0.5rem', height: '0.5rem', fontSize: '0.7rem'}}>3</span>
-              </button>
-
-              {/* Settings */}
-              <button type="button" className="btn btn-outline-secondary">
-                <Settings style={{width: '1.25rem', height: '1.25rem'}} />
-              </button>
-
-              {/* Logout */}
-              <button
-                type="button"
-                onClick={onLogout}
-                className="btn btn-outline-secondary d-flex align-items-center gap-2"
-              >
-                <LogOut style={{width: '1rem', height: '1rem'}} />
-                <span className="d-none d-sm-inline">Cerrar Sesión</span>
-              </button>
+              {/* User Profile Dropdown */}
+              <div className="dropdown">
+                <button 
+                  className="btn d-flex align-items-center gap-3 p-3 rounded-3 border-0 transition-all" 
+                  type="button" 
+                  data-bs-toggle="dropdown" 
+                  aria-expanded="false"
+                  style={{
+                    backgroundColor: 'var(--background-light)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-color)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    minWidth: '200px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--card-bg)'
+                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.2)'
+                    e.currentTarget.style.transform = 'translateY(-2px)'
+                    e.currentTarget.style.borderColor = 'var(--primary-color)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--background-light)'
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.borderColor = 'var(--border-color)'
+                  }}
+                >
+                  <div className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" 
+                       style={{width: '2.5rem', height: '2.5rem', backgroundColor: 'var(--primary-color)'}}>
+                    {username.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="d-none d-md-block text-start flex-fill">
+                    <p className="small fw-semibold mb-1" style={{color: 'var(--text-color)'}}>{username}</p>
+                    <p className="small mb-0" style={{color: 'var(--text-muted)'}}>{costCenter}</p>
+                  </div>
+                  <div className="d-flex align-items-center">
+                    <ChevronRight style={{width: '1rem', height: '1rem', color: 'var(--text-muted)'}} />
+                  </div>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end shadow" style={{minWidth: '200px'}}>
+                  <li>
+                    <h6 className="dropdown-header">Opciones de Usuario</h6>
+                  </li>
+                  <li>
+                    <button className="dropdown-item d-flex align-items-center gap-2" type="button">
+                      <Settings style={{width: '1rem', height: '1rem'}} />
+                      Configuración
+                    </button>
+                  </li>
+                  <li><hr className="dropdown-divider" /></li>
+                  <li>
+                    <button 
+                      className="dropdown-item d-flex align-items-center gap-2 text-danger" 
+                      type="button"
+                      onClick={onLogout}
+                    >
+                      <LogOut style={{width: '1rem', height: '1rem'}} />
+                      Cerrar Sesión
+                    </button>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </header>
