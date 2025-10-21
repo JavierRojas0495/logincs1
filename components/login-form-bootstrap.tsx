@@ -57,12 +57,12 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                  style={{borderColor: 'var(--border-color)', boxShadow: '0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08)'}}>
               <div className="d-flex align-items-center gap-4">
                 <div className="d-flex align-items-center justify-content-center" 
-                     style={{width: '4rem', height: '4rem'}}>
+                     style={{width: '8rem', height: '8rem'}}>
                   <Image 
                     src="/img/corporativo/logo_repremundo.gif" 
                     alt="Repremundo Logo" 
-                    width={64} 
-                    height={64} 
+                    width={128} 
+                    height={128} 
                     className="img-fluid" 
                     style={{maxWidth: '100%', height: 'auto'}}
                   />
@@ -275,17 +275,15 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           </div>
 
           {/* Certifications */}
-          <div className="d-flex align-items-center justify-content-center gap-3">
-            <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2 px-3 py-2 border border-white border-opacity-20">
-              <p className="fw-semibold text-white mb-0" style={{fontSize: '0.8rem'}}>ISO 9001</p>
-            </div>
-            <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2 px-3 py-2 border border-white border-opacity-20">
-              <p className="fw-semibold text-white mb-0" style={{fontSize: '0.8rem'}}>ISO 27001</p>
-            </div>
-            <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2 px-3 py-2 border border-white border-opacity-20 d-flex align-items-center gap-2">
-              <Globe className="text-white" style={{width: '1rem', height: '1rem'}} />
-              <p className="fw-semibold text-white mb-0" style={{fontSize: '0.8rem'}}>BASC</p>
-            </div>
+          <div className="d-flex align-items-center justify-content-center">
+            <Image 
+              src="/img/corporativo/logos_icontec.png" 
+              alt="Certificaciones Icontec" 
+              width={200} 
+              height={80} 
+              className="img-fluid" 
+              style={{maxWidth: '100%', height: 'auto'}}
+            />
           </div>
         </div>
       </div>
