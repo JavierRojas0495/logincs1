@@ -241,35 +241,19 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             Integra la información básica con la operación de transporte
           </h2>
 
-          <p className="lead text-white-75 mb-4 lh-base" style={{fontSize: '1.1rem', lineHeight: '1.5'}}>
-            El manejo de terceros, el proceso de predespacho, la facturación y la operación nacional en un solo sistema
-            de gestión.
-          </p>
-
-          {/* Feature Highlights */}
-          <div className="row g-3 mb-4">
-            <div className="col-4">
-              <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3 p-3 border border-white border-opacity-20 h-100">
-                <div className="bg-white bg-opacity-20 w-100 rounded-2 d-flex align-items-center justify-content-center mb-2" style={{height: '3rem'}}>
-                  <Truck className="text-white" style={{width: '2rem', height: '2rem'}} />
-                </div>
-                <p className="fw-semibold text-white mb-0" style={{fontSize: '0.85rem'}}>Gestión de Flota</p>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3 p-3 border border-white border-opacity-20 h-100">
-                <div className="bg-white bg-opacity-20 w-100 rounded-2 d-flex align-items-center justify-content-center mb-2" style={{height: '3rem'}}>
-                  <Package className="text-white" style={{width: '2rem', height: '2rem'}} />
-                </div>
-                <p className="fw-semibold text-white mb-0" style={{fontSize: '0.85rem'}}>Control de Envíos</p>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-3 p-3 border border-white border-opacity-20 h-100">
-                <div className="bg-white bg-opacity-20 w-100 rounded-2 d-flex align-items-center justify-content-center mb-2" style={{height: '3rem'}}>
-                  <TrendingUp className="text-white" style={{width: '2rem', height: '2rem'}} />
-                </div>
-                <p className="fw-semibold text-white mb-0" style={{fontSize: '0.85rem'}}>Análisis en Tiempo Real</p>
+          {/* System Messages Banner */}
+          <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-4 p-4 mb-4 border border-white border-opacity-20">
+            <div className="text-center">
+              <h4 className="fw-bold text-white mb-3" style={{fontSize: '1.1rem'}}>
+                📢 Mensajes del Sistema
+              </h4>
+              <div className="bg-white bg-opacity-5 rounded-3 p-3 border border-white border-opacity-10">
+                <p className="mb-2" style={{fontSize: '0.95rem', lineHeight: '1.4', color: '#000000'}}>
+                  <strong>Bienvenido al nuevo sistema de gestión logística</strong>
+                </p>
+                <p className="text-white-75 mb-0" style={{fontSize: '0.85rem', lineHeight: '1.3'}}>
+                  Accede a todas las funcionalidades mejoradas para optimizar tus operaciones de transporte y logística.
+                </p>
               </div>
             </div>
           </div>
