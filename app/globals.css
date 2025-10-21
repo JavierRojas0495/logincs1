@@ -219,6 +219,25 @@ body {
   }
 }
 
+/* Sidebar styles */
+.sidebar-custom {
+  background: linear-gradient(180deg, var(--sidebar-bg), #334155, var(--sidebar-bg));
+  color: var(--sidebar-text);
+  transition: width 0.3s ease;
+}
+
+.sidebar-open {
+  width: 18rem !important;
+}
+
+.sidebar-closed {
+  width: 4rem !important;
+}
+
+.sidebar-custom .transition-all {
+  transition: all 0.3s ease;
+}
+
 /* Responsive utilities */
 @media (max-width: 768px) {
   .custom-card {
